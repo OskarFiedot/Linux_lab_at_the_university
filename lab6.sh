@@ -1,42 +1,40 @@
 #!/bin/bash
 
-re="^[0-7]{3}"
-if [ "$1" == "-h" -o "$1" == "--help" ]; then		#if sprawdza, czy użytkownik prosił o wyświetlenie pomocy dla tego skryptu
-echo "Składnia: ./zadanie2.sh NAZWA_FOLDERU NAZWA_PLIKU UPRAWNIENIA_FOLDERU UPRAWNIENIA_PLIKU"
-echo "Opis:"
-echo "Skrypt 'zadanie2.sh' tworzy folder o nazwie NAZWA_FOLDERU i uprawnieniach UPRAWNIENIA_FOLDERU, następnie tworzy w tym folderze plik o nazwie NAZWA_PLIKU, z uprawnieniami określonymi w UPRAWNIENIA_PLIKU."
-echo "Uprawnienia należy podawać w fomie liczbowej, np. 770"
-exit 0
-elif [ $# -ne 4 ]; then		#Jeśli nie, to funkcja warunkowa sprawdza czy została przesłana odpowiednia ilość argumentów. Jeśli tak nie było, program zakończy swoje działanie. 
-echo "Niepoprawna liczba argumentów, przesłanych do programu (powinno być ich 4)"
-exit 1
-elif ! [[ $3 =~ $re ]]; then	#ify, które sprawdzają, czy poprawnie podano uprawnienia
-echo "Niepoprawnie podane uprawnienia dla folderu"
-exit 1
-elif ! [[ $4 =~ $re ]]; then
-echo "Niepoprawnie podane uprawnienia dla pliku"
-exit 1
+if [ "$1" == "-h" -o "$1" == "--help" ]; then		#conditional instruction checks if user has requested to display help for this script
+	echo "Syntax: ./lab6.sh FOLDER_NAME FILE_NAME FOLDER_PERMISSIONS FILE_PERMISSIONS"
+	echo "Description:"
+	echo "The script lab6.sh creates a folder, named FOLDER_NAME, with the permissions of FOLDER_PERMISSIONS, then creates a file, named FILE_NAME, in that folder, with the permissions specified in FILE_PERMISSIONS."
+	echo "Permissions should be given in numerical form, e.g. 770"
+	exit 0
+elif [ $# -ne 4 ]; then		#If not, the conditional function checks whether the correct number of arguments were sent. If not, the program terminates. 
+	echo "Incorrect number of arguments sent to the program (should be 4)"
+	exit 1
+elif ! [[ "$3" =~ ^[0-7]{3}$ ]]; then	#conditional instructions that check whether the permissions have been correctly specified
+	echo "Incorrectly specified permissions for a folder"
+	exit 1
+elif ! [[ "$4" =~ ^[0-7]{3}$ ]]; then
+	echo "Incorrectly specified file permissions"
+	exit 1
 fi
-#Jeśli użytkownik nie prosił o wyświetlenie pomocy oraz jeśli liczba przesłanych argumentów i sposób wysłania uprawnień były prawidłowe, program wykonuje swoje zadanie
-if ! [ -d $1 ]; then 
-mkdir $1	#Utworzenie folderu o nazwie NAZWA_FOLDERU
-echo "Utworzono folder $1"
+#If the user did not ask for help, and if the number of arguments sent and the way the permissions were sent were correct, the program does its job
+if ! [ -d "$1" ]; then 
+	mkdir "$1"	
+	echo "Folder $1 has been created"
 else
-echo "Folder $1 już istnieje"
+	echo "Folder $1 already exists"
 fi
-chmod $3 $1	#Nadanie uprawnień folderowi
-echo "Nadano folderowi $1 uprawnienia $3"
-re="^[37][0-7][0-7]"
-if ! [[ $3 =~ $re ]]; then	#Sprawdzenie czy uprawnienia nadane folderowi pozwalają na stworzenie w nim folderu
-echo "Uprawnienia folderu nie pozwalają na dokończenie operacji"
-exit 0
+chmod "$3" "$1"	#Granting permissions to a folder
+echo "Permissions $3 has been granted to folder $1"
+if ! [[ "$3" =~ ^[37][0-7]{2}$ ]]; then		#Checking whether the permissions granted to a folder allow you to create a file in it
+	echo "Folder permissions do not allow to complete the operation"
+	exit 0
 fi
-cd $1		#Wejście do utworzonego folderu
-if ! [ -f $2 ]; then
-touch $2	#Utworzenie pliku o nazwie takiej, jaka została przesłana do programu jako drugi parametr
-echo "Stworzono plik $2 w folderze $1"
+cd "$1"		#Entry into the created folder
+if ! [ -f "$2" ]; then
+	touch "$2"	#Create a file with the name that was sent to the program as the second parameter
+	echo "A file $2 has been created in the folder $1"
 else
-echo "Plik $2 już istnieje w folderze $1"
+	echo "File $2 already exists in folder $1"
 fi
-chmod $4 $2	#Ustawienie wcześniej utworzonemu plikowu uprawnień dostępu, które zostały przesłane do programu jako czwarty parametr
-echo "Nadano plikowi $2 w folderze $1 uprawnienia $4"
+chmod "$4" "$2"	#Setting the previously created file, permissions, which were sent to the program as the fourth parameter
+echo "File $2 in folder $1 has been assigned permissions of $4"
